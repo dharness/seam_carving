@@ -82,6 +82,7 @@ def get_best_seam(M, P):
 
 if (__name__ == '__main__'):
   im1 = misc.imread('cat.png')
+  print(im1.shape)
 
   im = [[
     [101, 244, 231, 126, 249],
