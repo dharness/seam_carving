@@ -65,6 +65,13 @@ def remove_seam(img4, seam):
   return new_img
 
 def add_seam(img4, seam):
+  """
+  Adds the provided seam in either the horizontal or verical direction
+
+  Returns
+  =======
+    4-D image with seam added to all layers
+  """
   width = img4.shape[0] if img4.shape[0] == seam.shape[0] else img4.shape[0] + 1
   height = img4.shape[1] if img4.shape[1] == seam.shape[1] else img4.shape[1] + 1
   new_img = np.zeros((
@@ -80,3 +87,40 @@ def add_seam(img4, seam):
     new_img[i] = img_row
 
   return new_img
+
+
+def find_seams(eng):
+  """
+  Adds the provided seam in either the horizontal or verical direction
+
+  Returns
+  =======
+    Tuple (M, P) 2-D matrices where M is the cummulative energy along a path
+    and P is the parent along the path
+  """
+  rows = len(eng)
+  cols = len(eng[0])
+  M = np.zeros(shape=(rows, cols))
+  P = np.zeros(shape=(rows, cols))
+  M[0] = eng[0]
+  P[0] = [-1] * cols
+  inf = float('Inf')
+
+  for r in range(1, rows):
+    for c in range(0, cols):
+      option_1 = M[r-1, c-1] if (c > 0) else inf
+      option_2 = M[r-1, c] if (c < cols) else inf
+      option_3 = M[r-1, c+1] if (c < cols - 1) else inf
+
+      if (option_1 <= option_2 and option_1 <= option_3):
+        M[r, c] = eng[r, c] + M[r-1, c-1]
+        P[r, c] = c-1
+      elif (option_2 <= option_1 and option_2 <= option_3):
+        M[r, c] = eng[r, c] + M[r-1, c]
+        P[r, c] = c
+      else:
+        M[r, c] = eng[r, c] + M[r-1, c+1]
+        P[r, c] = c+1
+
+  P = P.astype(int)
+  return (M, P)
