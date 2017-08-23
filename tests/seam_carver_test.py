@@ -111,9 +111,40 @@ class TestSeamCarver(unittest.TestCase):
             [1, 1, 0, -1, 1],
             [-1, -1, 0, 1, 0]
         ])
-        seam = np.array([[1],[2],[3],[4],[1]])
-        remove_seam(img4, seam)
+        seam = np.array([[0],[1],[2],[3],[0]])
+        img4_removed = remove_seam(img4, seam)
 
+        self.assertEqual(img4_removed[:,:,0].tolist(),
+            [[244, 231, 126, 249],
+            [151, 219, 9, 64],
+            [88, 93, 112, 155],
+            [114, 55, 55, 205],
+            [154, 24, 252, 63]]
+        )
+        
+        self.assertEqual(img4_removed[:,:,1].tolist(),
+            [[228, 195, 68, 102],
+            [92, 216, 64, 221],
+            [218, 134, 35, 213],
+            [229, 23, 192, 147],
+            [218, 78, 231, 146]]
+        )
+        
+        self.assertEqual(img4_removed[:,:,2].tolist(),
+            [[201, 137, 85, 182],
+            [225, 91, 122, 60],
+            [85, 46, 162, 241],
+            [101, 252, 31, 69],
+            [198, 196, 26, 239]]
+        )
+        
+        self.assertEqual(img4_removed[:,:,3].tolist(),
+            [[1, 0, -1, 0],
+            [1, 0, -1, 1],
+            [0, 1, -1, -1],
+            [1, 1, 0, 1],
+            [-1, 0, 1, 0]]
+        )
 
 if __name__ == '__main__':
     unittest.main()

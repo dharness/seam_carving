@@ -40,20 +40,26 @@ def compute_eng_grad(img):
   eng = gaussian_gradient_magnitude(bw_img, 1)
   return normalize(eng)
 
-# TODO -- MAKE SURE THE NEW_IMG SHAPE IS ADJUSTED FOR THE
-# SEAM YOU ARE REMOVING
+
 def remove_seam(img4, seam):
+  """
+  Removes 1 seam from the image either vertical or horizontal
+
+  Returns
+  =======
+    4-D image with seam removed from all layers
+  """
+  width = img4.shape[0] if img4.shape[0] == seam.shape[0] else img4.shape[0] - 1
+  height = img4.shape[1] if img4.shape[1] == seam.shape[1] else img4.shape[1] - 1
   new_img = np.zeros((
-    img4.shape[0],
-    img4.shape[1],
-    3,
+    width,
+    height,
+    img4.shape[2],
   ))
-  print(seam.shape)
-  print(new_img.shape)
   for i, row in enumerate(seam):
     img_row = img4[i]
     for col in row:
       img_row = np.delete(img_row, col, axis=0)
-    print(img_row.shape)
     new_img[i] = img_row
-  
+
+  return new_img
