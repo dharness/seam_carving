@@ -7,7 +7,8 @@ from seam_carver import (
     compute_eng_grad,
     remove_seam,
     add_seam,
-    find_seams
+    find_seams,
+    get_best_seam
 )
 
 
@@ -247,6 +248,32 @@ class TestSeamCarver(unittest.TestCase):
         M, P = find_seams(eng)
         self.assertEqual(M.tolist(), expected_M)
         self.assertEqual(P.tolist(), expected_P)
+
+    def test_get_best_seam(self):
+        M = np.vstack((
+            [577.2127, -474.0578, -211.6035, -183.2227, -471.221],
+            [-856.4554, -1128.0515, -858.6116, -458.3585, -183.33069999999998],
+            [-1061.6079, -1271.6216, -1131.5992, -1338.6698, -1037.2183],
+            [-1232.0566999999999, -1994.6149, -1244.1979, -1758.695, -1498.0321],
+            [-1684.6478, -2417.1225, -2201.3269, -1915.8555999999999, -1647.2332999999999]
+        ))
+        P = np.vstack((
+            [-1, -1, -1, -1, -1],
+            [1, 1, 1, 4, 4],
+            [1, 1, 1, 2, 3],
+            [1, 1, 3, 3, 3],
+            [1, 1, 1, 3, 3]
+        ))
+        seam, cost = get_best_seam(M, P)
+        self.assertEqual(seam, [
+            [1],
+            [1],
+            [1],
+            [1],
+            [1]
+        ])
+        self.assertEqual(cost, -2417.1225)
+
 
 if __name__ == '__main__':
     unittest.main()

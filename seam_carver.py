@@ -124,3 +124,23 @@ def find_seams(eng):
 
   P = P.astype(int)
   return (M, P)
+
+
+def get_best_seam(M, P):
+  """
+  Determines the best vertical seam based on the cummulative energy in M
+
+  Returns
+  =======
+    2-D matrix representing a vertical seam. seam[r,c] specifies the row-column
+    index of the pixel to be removed on the original image
+  """
+  rows = len(P)
+  seam = [None] * rows
+  i = M[-1].argmin(axis=0)
+  cost = M[-1][i]
+  seam[rows-1] = i
+  for r in reversed(range(0, rows)):
+    seam[r] = i
+    i = P[r][i]
+  return (seam, cost)
