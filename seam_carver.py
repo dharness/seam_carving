@@ -56,10 +56,27 @@ def remove_seam(img4, seam):
     height,
     img4.shape[2],
   ))
-  for i, row in enumerate(seam):
+  for i, seam_row in enumerate(seam):
     img_row = img4[i]
-    for col in row:
+    for col in seam_row:
       img_row = np.delete(img_row, col, axis=0)
+    new_img[i] = img_row
+
+  return new_img
+
+def add_seam(img4, seam):
+  width = img4.shape[0] if img4.shape[0] == seam.shape[0] else img4.shape[0] + 1
+  height = img4.shape[1] if img4.shape[1] == seam.shape[1] else img4.shape[1] + 1
+  new_img = np.zeros((
+    width,
+    height,
+    img4.shape[2],
+  ))
+  for i, seam_row in enumerate(seam):
+    img_row = img4[i]
+    for col in seam_row:
+      new_pixel = img_row[col]
+      img_row = np.insert(img_row, col + 1, new_pixel, axis=0)
     new_img[i] = img_row
 
   return new_img

@@ -1,7 +1,13 @@
 import unittest
-from seam_carver import apply_filter, normalize, compute_eng_grad, remove_seam
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from seam_carver import (
+    apply_filter,
+    normalize,
+    compute_eng_grad,
+    remove_seam,
+    add_seam
+)
 
 
 class TestSeamCarver(unittest.TestCase):
@@ -144,6 +150,74 @@ class TestSeamCarver(unittest.TestCase):
             [0, 1, -1, -1],
             [1, 1, 0, 1],
             [-1, 0, 1, 0]]
+        )
+    
+    def test_add_seam(self):
+        img4 = np.zeros((5,5,4))
+        
+        img4[:,:,0] = np.array([
+            [101, 244, 231, 126, 249],
+            [151, 249, 219, 9, 64],
+            [88, 93, 21, 112, 155],
+            [114, 55, 55, 120, 205],
+            [84, 154, 24, 252, 63]
+        ])
+
+        img4[:,:,1] = np.array([
+            [115, 228, 195, 68, 102],
+            [92, 74, 216, 64, 221],
+            [218, 134, 123, 35, 213],
+            [229, 23, 192, 111, 147],
+            [164, 218,  78, 231, 146]
+        ])
+
+        img4[:,:,2] = np.array([
+            [91, 201, 137, 85, 182],
+            [225, 102, 91, 122, 60],
+            [85,  46, 139, 162, 241],
+            [101, 252, 31, 100, 69],
+            [158, 198, 196, 26, 239]
+        ])
+        
+        img4[:,:,3] = np.array([
+            [-1, 1, 0, -1, 0],
+            [1, 1, 0, -1, 1],
+            [0, 1, 0, -1, -1],
+            [1, 1, 0, -1, 1],
+            [-1, -1, 0, 1, 0]
+        ])
+        seam = np.array([[0],[1],[2],[3],[0]])
+        img4_added = add_seam(img4, seam)
+        self.assertEqual(img4_added[:,:,0].tolist(),
+            [[101, 101, 244, 231, 126, 249],
+            [151, 249, 249, 219, 9, 64],
+            [88, 93, 21, 21, 112, 155],
+            [114, 55, 55, 120, 120, 205],
+            [84, 84, 154, 24, 252, 63]]
+        )
+
+        self.assertEqual(img4_added[:,:,1].tolist(),
+            [[115, 115, 228, 195,  68, 102],
+            [92,  74,  74, 216,  64, 221],
+            [218, 134, 123, 123,  35, 213],
+            [229,  23, 192, 111, 111, 147],
+            [164, 164, 218,  78, 231, 146]]
+        )
+
+        self.assertEqual(img4_added[:,:,2].tolist(),
+            [[91, 91, 201, 137, 85, 182],
+            [225, 102, 102, 91, 122,60],
+            [85, 46, 139, 139, 162, 241],
+            [101, 252, 31, 100, 100, 69],
+            [158, 158, 198, 196, 26, 239]]
+        )
+
+        self.assertEqual(img4_added[:,:,3].tolist(),
+            [[-1,-1, 1, 0,-1, 0],
+            [1, 1, 1, 0,-1, 1],
+            [0, 1, 0, 0,-1,-1],
+            [1, 1, 0,-1,-1, 1],
+            [-1,-1,-1, 0, 1, 0]]
         )
 
 if __name__ == '__main__':
