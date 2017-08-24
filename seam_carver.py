@@ -52,6 +52,14 @@ def compute_eng_color(img, rgb_weights):
   eng = np.sum(eng, axis=2)
   return eng
 
+def compute_eng(img4, rgb_weights, mask_weight):
+  img = img4[:,:,0:3]
+  mask = img4[:,:,3]
+  eng_color = compute_eng_color(img, rgb_weights)
+  eng_grad = compute_eng_grad(img)
+  eng_mask = mask * mask_weight
+  return eng_grad + eng_color + eng_mask
+
 def remove_seam(img4, seam):
   """
   Removes 1 seam from the image either vertical or horizontal
@@ -155,3 +163,7 @@ def get_best_seam(M, P):
     seam[r] = i
     i = P[r][i]
   return (seam, cost)
+
+
+def reduce_width(img4, eng):
+  pass
