@@ -13,7 +13,8 @@ from seam_carver import (
     get_best_seam,
     reduce_width,
     reduce_height,
-    increase_width
+    increase_width,
+    increase_height
 )
 
 
@@ -271,6 +272,15 @@ class TestSeamCarver(unittest.TestCase):
         eng = compute_eng(img4, rgb_weights, mask_weight)
         seam, increaseded_img4, cost = increase_width(img4, eng)
         self.assertEqual(increaseded_img4.shape, (5, 6, 4))
+
+
+    def test_increase_height(self):
+        img4 = self.img4
+        rgb_weights = [-3, 1, -3]
+        mask_weight = 10
+        eng = compute_eng(img4, rgb_weights, mask_weight)
+        seam, increaseded_img4, cost = increase_height(img4, eng)
+        self.assertEqual(increaseded_img4.shape, (6, 5, 4))
 
 if __name__ == '__main__':
     unittest.main()
