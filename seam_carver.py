@@ -174,3 +174,14 @@ def reduce_width(img4, eng):
   seam, cost = get_best_seam(M, P)
   reduced_img4 = remove_seam(img4, seam)
   return seam, reduced_img4, cost
+
+
+def reduce_height(img4, eng):
+  flipped_eng = np.transpose(eng)
+  flipped_img4 = np.transpose(img4, (1,0,2))
+  flipped_seam, reduced_flipped_img4, cost = reduce_width(flipped_img4, flipped_eng)
+  return (
+    np.transpose(flipped_seam),
+    np.transpose(reduced_flipped_img4, (1,0,2)),
+    cost
+  )
