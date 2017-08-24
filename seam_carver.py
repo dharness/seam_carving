@@ -102,9 +102,12 @@ def add_seam(img4, seam):
     height,
     img4.shape[2],
   ))
+  print(seam)
+  print(img4.shape)
+  print(new_img.shape)
   for i, seam_row in enumerate(seam):
     img_row = img4[i]
-    for col in seam_row:
+    for col in seam_row.astype(int):
       new_pixel = img_row[col]
       img_row = np.insert(img_row, col + 1, new_pixel, axis=0)
     new_img[i] = img_row
@@ -170,6 +173,9 @@ def get_best_seam(M, P):
 
 
 def reduce_width(img4, eng):
+  """
+  Reduces the width by 1 pixel
+  """
   M, P = find_seams(eng)
   seam, cost = get_best_seam(M, P)
   reduced_img4 = remove_seam(img4, seam)
@@ -177,6 +183,9 @@ def reduce_width(img4, eng):
 
 
 def reduce_height(img4, eng):
+  """
+  Reduces the height by 1 pixel
+  """
   flipped_eng = np.transpose(eng)
   flipped_img4 = np.transpose(img4, (1,0,2))
   flipped_seam, reduced_flipped_img4, cost = reduce_width(flipped_img4, flipped_eng)
@@ -185,3 +194,12 @@ def reduce_height(img4, eng):
     np.transpose(reduced_flipped_img4, (1,0,2)),
     cost
   )
+
+def increase_width(img4, eng):
+  """
+  Increase the width by 1 pixel
+  """
+  M, P = find_seams(eng)
+  seam, cost = get_best_seam(M, P)
+  increased_img4 = add_seam(img4, seam)
+  return seam, increased_img4, cost
