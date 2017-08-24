@@ -40,6 +40,7 @@ def compute_eng_grad(img):
   eng = gaussian_gradient_magnitude(bw_img, 1)
   return normalize(eng)
 
+
 def compute_eng_color(img, rgb_weights):
   """
   Computes the energy of an image using its color properties
@@ -52,6 +53,7 @@ def compute_eng_color(img, rgb_weights):
   eng = np.sum(eng, axis=2)
   return eng
 
+
 def compute_eng(img4, rgb_weights, mask_weight):
   img = img4[:,:,0:3]
   mask = img4[:,:,3]
@@ -59,6 +61,7 @@ def compute_eng(img4, rgb_weights, mask_weight):
   eng_grad = compute_eng_grad(img)
   eng_mask = mask * mask_weight
   return eng_grad + eng_color + eng_mask
+
 
 def remove_seam(img4, seam):
   """
@@ -78,10 +81,11 @@ def remove_seam(img4, seam):
   for i, seam_row in enumerate(seam):
     img_row = img4[i]
     for col in seam_row:
-      img_row = np.delete(img_row, col, axis=0)
+      img_row = np.delete(img_row, col.astype(int), axis=0)
     new_img[i] = img_row
 
   return new_img
+
 
 def add_seam(img4, seam):
   """
@@ -155,15 +159,18 @@ def get_best_seam(M, P):
     index of the pixel to be removed on the original image
   """
   rows = len(P)
-  seam = [None] * rows
+  seam = np.zeros((rows, 1))
   i = M[-1].argmin(axis=0)
   cost = M[-1][i]
   seam[rows-1] = i
   for r in reversed(range(0, rows)):
-    seam[r] = i
+    seam[r][0] = i
     i = P[r][i]
   return (seam, cost)
 
 
 def reduce_width(img4, eng):
-  pass
+  M, P = find_seams(eng)
+  seam, cost = get_best_seam(M, P)
+  reduced_img4 = remove_seam(img4, seam)
+  return seam, reduced_img4, cost
