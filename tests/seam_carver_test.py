@@ -5,6 +5,7 @@ from seam_carver import (
     apply_filter,
     normalize,
     compute_eng_grad,
+    compute_eng_color,
     remove_seam,
     add_seam,
     find_seams,
@@ -84,6 +85,41 @@ class TestSeamCarver(unittest.TestCase):
         self.assertLessEqual(np.max(eng), 255)
         self.assertGreaterEqual(np.min(eng), 0)
 
+    def test_compute_eng_color(self):
+        img = np.zeros((5,5,3))
+        img[:,:,0] = np.vstack((
+            [101, 244, 231, 126, 249],
+            [151, 249, 219, 9, 64],
+            [88, 93, 21, 112, 155],
+            [114, 55, 55, 120, 205],
+            [84, 154, 24, 252, 63]
+        ))
+
+        img[:,:,1] = np.vstack((
+            [115, 228, 195, 68, 102],
+            [92, 74, 216, 64, 221],
+            [218, 134, 123, 35, 213],
+            [229, 23, 192, 111, 147],
+            [164, 218,  78, 231, 146]
+        ))
+
+        img[:,:,2] = np.vstack((
+            [91, 201, 137, 85, 182],
+            [225, 102, 91, 122, 60],
+            [85,  46, 139, 162, 241],
+            [101, 252, 31, 100, 69],
+            [158, 198, 196, 26, 239]
+        ))
+        rgb_weights = [-3, 1, -3]
+        expected_eng = [
+            [-461, -1107,  -909,  -565, -1191],
+            [-1036, -979, -714, -329, -151],
+            [-301, -283, -357, -787, -975],
+            [-416, -898,  -66, -549, -675],
+            [-562, -838, -582, -603, -760]
+        ]
+        eng = compute_eng_color(img, rgb_weights)
+        self.assertGreaterEqual(eng.tolist(), expected_eng)
 
     def test_remove_seam(self):
         img4 = np.zeros((5,5,4))

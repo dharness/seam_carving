@@ -33,13 +33,24 @@ def apply_filter(img, img_filter):
 
 def compute_eng_grad(img):
   """
-  Computes the gradient magnitude matrix of the provided image
+  Computes the energy of an image using gradient magnitude
   """
   bw_img = rgb_to_gray(img)
   eng = generic_gradient_magnitude(bw_img, sobel)
   eng = gaussian_gradient_magnitude(bw_img, 1)
   return normalize(eng)
 
+def compute_eng_color(img, rgb_weights):
+  """
+  Computes the energy of an image using its color properties
+  """
+  eng = np.dstack((
+    img[:,:,0] * rgb_weights[0],
+    img[:,:,1] * rgb_weights[1],
+    img[:,:,2] * rgb_weights[2]
+  ))
+  eng = np.sum(eng, axis=2)
+  return eng
 
 def remove_seam(img4, seam):
   """
