@@ -102,9 +102,6 @@ def add_seam(img4, seam):
     height,
     img4.shape[2],
   ))
-  print(seam)
-  print(img4.shape)
-  print(new_img.shape)
   for i, seam_row in enumerate(seam):
     img_row = img4[i]
     for col in seam_row.astype(int):
@@ -203,3 +200,18 @@ def increase_width(img4, eng):
   seam, cost = get_best_seam(M, P)
   increased_img4 = add_seam(img4, seam)
   return seam, increased_img4, cost
+
+def increase_height(img4, eng):
+  """
+  Increase the height by 1 pixel
+  """
+  flipped_eng = np.transpose(eng)
+  flipped_img4 = np.transpose(img4, (1,0,2))
+  M, P = find_seams(flipped_eng)
+  flipped_seam, cost = get_best_seam(M, P)
+  increased_fliped_img4 = add_seam(flipped_img4, flipped_seam)
+  return (
+    np.transpose(flipped_seam),
+    np.transpose(increased_fliped_img4, (1,0,2)),
+    cost
+  )
