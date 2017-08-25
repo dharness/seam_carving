@@ -192,6 +192,7 @@ def reduce_height(img4, eng):
     cost
   )
 
+
 def increase_width(img4, eng):
   """
   Increase the width by 1 pixel
@@ -200,6 +201,7 @@ def increase_width(img4, eng):
   seam, cost = get_best_seam(M, P)
   increased_img4 = add_seam(img4, seam)
   return seam, increased_img4, cost
+
 
 def increase_height(img4, eng):
   """
@@ -215,3 +217,23 @@ def increase_height(img4, eng):
     np.transpose(increased_fliped_img4, (1,0,2)),
     cost
   )
+
+def intelligent_resize(img, d_width, d_height, rgb_weights, mask, mask_weight):
+  img4 = np.dstack((img, mask))
+  adjust_width = reduce_width if d_width > 0 else increase_width
+  adjust_height = reduce_height if d_height > 0 else increase_height
+  d_width = np.abs(d_width)
+  d_height = np.abs(d_height)
+
+  while(d_width > 0 or d_height > 0):
+    if(d_width > 0):
+      eng = compute_eng(img4, rgb_weights, mask_weight)
+      seam, reduced_img4, cost = adjust_width(img4, eng)
+      img4 = reduced_img4
+      d_width = d_width - 1
+    if(d_height > 0):
+      eng = compute_eng(img4, rgb_weights, mask_weight)
+      seam, reduced_img4, cost = adjust_height(img4, eng)
+      img4 = reduced_img4
+      d_height = d_height - 1
+  return img4
