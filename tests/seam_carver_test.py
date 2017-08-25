@@ -14,7 +14,8 @@ from seam_carver import (
     reduce_width,
     reduce_height,
     increase_width,
-    increase_height
+    increase_height,
+    intelligent_resize
 )
 
 
@@ -281,6 +282,31 @@ class TestSeamCarver(unittest.TestCase):
         eng = compute_eng(img4, rgb_weights, mask_weight)
         seam, increaseded_img4, cost = increase_height(img4, eng)
         self.assertEqual(increaseded_img4.shape, (6, 5, 4))
+
+
+    def test_intelligent_resize(self):
+        img = self.img4[:,:,0:3]
+        mask = self.img4[:,:,3]
+        rgb_weights = [-3, 1, -3]
+        mask_weight = 10
+
+        resized_img = intelligent_resize(img, 1, 0, rgb_weights, mask, mask_weight)
+        self.assertEqual(resized_img.shape, (5, 4, 4))
+
+        resized_img = intelligent_resize(img, 0, 1, rgb_weights, mask, mask_weight)
+        self.assertEqual(resized_img.shape, (4, 5, 4))
+
+        resized_img = intelligent_resize(img, 1, 1, rgb_weights, mask, mask_weight)
+        self.assertEqual(resized_img.shape, (4, 4, 4))
+
+        resized_img = intelligent_resize(img, -1, 0, rgb_weights, mask, mask_weight)
+        self.assertEqual(resized_img.shape, (5, 6, 4))
+
+        resized_img = intelligent_resize(img, 0, -1, rgb_weights, mask, mask_weight)
+        self.assertEqual(resized_img.shape, (6, 5, 4))
+
+        resized_img = intelligent_resize(img, -1, -1, rgb_weights, mask, mask_weight)
+        self.assertEqual(resized_img.shape, (6, 6, 4))
 
 if __name__ == '__main__':
     unittest.main()
