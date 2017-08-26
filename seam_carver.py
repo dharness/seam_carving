@@ -166,7 +166,10 @@ def add_seam(img4, seam, eng):
     for i, seam_row in enumerate(seam):
         img_row = img4[i]
         for col in seam_row.astype(int):
-            new_pixel = img_row[col]
+            pixels = np.array([img_row[col]])
+            if col > 0: pixels = np.dstack((pixels, img_row[col-1]))
+            if col < len(img_row)-1: pixels = np.dstack((pixels, img_row[col+1]))
+            new_pixel = np.mean(pixels, axis=2)[0]
             eng[i, col] = highest_eng
             img_row = np.insert(img_row, col + 1, new_pixel, axis=0)
         new_img[i] = img_row
