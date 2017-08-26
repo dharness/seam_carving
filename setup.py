@@ -9,6 +9,8 @@ A combination of the gradient energy (determined with the sobel filter) and a si
 used to determine the least important seam. Additon of seams occurs by the same mechanism as described
 in the paper.
 """
+
+
 setup(name='seam_carver',
       description='A small tool for retargetting images to any dimension greater or smaller',
       long_description=long_description,
