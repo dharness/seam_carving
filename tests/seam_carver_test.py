@@ -162,7 +162,10 @@ class TestSeamCarver(unittest.TestCase):
     def test_add_seam(self):
         img4 = self.img4
         seam = np.array([[0],[1],[2],[3],[0]])
-        img4_added = add_seam(img4, seam)
+        rgb_weights = [-3, 1, -3]
+        mask_weight = 10
+        eng = compute_eng(img4, rgb_weights, mask_weight)
+        img4_added, _ = add_seam(img4, seam, eng)
         self.assertEqual(img4_added[:,:,0].tolist(),
             [[101, 101, 244, 231, 126, 249],
             [151, 249, 249, 219, 9, 64],
@@ -271,7 +274,7 @@ class TestSeamCarver(unittest.TestCase):
         rgb_weights = [-3, 1, -3]
         mask_weight = 10
         eng = compute_eng(img4, rgb_weights, mask_weight)
-        seam, increaseded_img4, cost = increase_width(img4, eng)
+        seam, increaseded_img4, cost, updated_eng = increase_width(img4, eng)
         self.assertEqual(increaseded_img4.shape, (5, 6, 4))
 
 
@@ -280,7 +283,7 @@ class TestSeamCarver(unittest.TestCase):
         rgb_weights = [-3, 1, -3]
         mask_weight = 10
         eng = compute_eng(img4, rgb_weights, mask_weight)
-        seam, increaseded_img4, cost = increase_height(img4, eng)
+        seam, increaseded_img4, cost, updated_eng = increase_height(img4, eng)
         self.assertEqual(increaseded_img4.shape, (6, 5, 4))
 
 
@@ -290,23 +293,20 @@ class TestSeamCarver(unittest.TestCase):
         rgb_weights = [-3, 1, -3]
         mask_weight = 10
 
-        resized_img = intelligent_resize(img, 1, 0, rgb_weights, mask, mask_weight)
+        resized_img = intelligent_resize(img, 0, -1, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (5, 4, 4))
 
-        resized_img = intelligent_resize(img, 0, 1, rgb_weights, mask, mask_weight)
+        resized_img = intelligent_resize(img, -1, 0, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (4, 5, 4))
 
-        resized_img = intelligent_resize(img, 1, 1, rgb_weights, mask, mask_weight)
+        resized_img = intelligent_resize(img, -1, -1, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (4, 4, 4))
 
-        resized_img = intelligent_resize(img, -1, 0, rgb_weights, mask, mask_weight)
+        resized_img = intelligent_resize(img, 0, 1, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (5, 6, 4))
 
-        resized_img = intelligent_resize(img, 0, -1, rgb_weights, mask, mask_weight)
+        resized_img = intelligent_resize(img, 1, 0, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (6, 5, 4))
 
-        resized_img = intelligent_resize(img, -1, -1, rgb_weights, mask, mask_weight)
+        resized_img = intelligent_resize(img, 1, 1, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (6, 6, 4))
-
-if __name__ == '__main__':
-    unittest.main()
