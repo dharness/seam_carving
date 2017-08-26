@@ -56,6 +56,11 @@ class TestVisualOutput(unittest.TestCase):
     resized_img = intelligent_resize(cat_img, -150, 0, rgb_weights, mask, mask_weight)
     misc.imsave('./demo/cat_grown.png', resized_img[:,:,0:3])
 
+    castle_img = misc.imread('./demo/castle_small.jpg')
+    castle_mask = np.zeros(castle_img.shape)
+    resized_img = intelligent_resize(castle_img, 150, 0, [0,0,0], castle_mask, mask_weight)
+    misc.imsave('./demo/castle_small_shrunk.png', resized_img[:,:,0:3])
+
 
 if __name__ == '__main__':
     unittest.main()
