@@ -13,5 +13,13 @@ lint:
 test:
 	python -m unittest tests.seam_carver_test$(only)
 
-demo:
-	python -m unittest tests.visual_output_test
+build:
+	python setup.py sdist bdist_wheel
+
+clean-build:
+	rm -rf dist
+	rm -rf build
+	rm -rf seam_carver.egg-info
+
+publish:
+	twine upload dist/*
