@@ -14,7 +14,7 @@ in the paper.
 setup(name='seam_carver',
       description='A small tool for retargetting images to any dimension greater or smaller',
       long_description=long_description,
-      version='0.1.0',
+      version='0.1.2',
       url='https://github.com/dharness/seam_carving',
       author='Dylan Harness',
       author_email='dharness.engineer@gmail.com',
@@ -28,7 +28,8 @@ setup(name='seam_carver',
       packages=find_packages(),
       install_requires=[
           'scipy>=0.19.1',
-          'numpy>=1.13.1'
+          'numpy>=1.13.1',
+          'Pillow>=4.2.1'
       ],
       python_requires='>=3'
 )

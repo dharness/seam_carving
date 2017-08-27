@@ -1,0 +1,1 @@
+from .seam_carver import intelligent_resize

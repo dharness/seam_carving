@@ -310,3 +310,6 @@ class TestSeamCarver(unittest.TestCase):
 
         resized_img = intelligent_resize(img, 1, 1, rgb_weights, mask, mask_weight)
         self.assertEqual(resized_img.shape, (6, 6, 4))
+
+if __name__ == '__main__':
+    unittest.main()

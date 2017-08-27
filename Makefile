@@ -7,11 +7,8 @@ clean-pyc:
 lint:
 	python -m pylint ./seam_carver.py
 
-# When using the 'only' option, you must prefix
-# the test name with a '.' (period)
-# e.g. make test only=.TestSeamCarver.test_add_seam
 test:
-	python -m unittest tests.seam_carver_test$(only)
+	python seam_carver/seam_carver_test.py
 
 build:
 	python setup.py sdist bdist_wheel
