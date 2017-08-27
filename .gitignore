@@ -27,3 +27,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+#OSX
+.DS_Store
