@@ -3,7 +3,7 @@
 </p>
 
 # seam_carver
-Seam Carving as a Service
+Python Seam Carving module
 
 seam_carver is a small tool for retargetting images to any dimension greater or smaller. It uses the process of seam carving as originally described by Shai Avidan & Ariel Shamir in http://perso.crans.org/frenoy/matlab2012/seamcarving.pdf
 
