@@ -11,6 +11,13 @@ def normalize(img, max_value=255.0):
     """
     Normalizes all values in the provided image to lie between 0 and
     the provided max value
+
+    Args:
+        img (n,m numpy matrix): RGB image.
+        max_value (float): upper bound for normalization
+
+    Returns:
+        n,m,3 numpy matrix: Normalized img
     """
     mins = np.min(img)
     normalized = np.array(img) + np.abs(mins)
@@ -21,21 +28,30 @@ def normalize(img, max_value=255.0):
 
 
 def rgb_to_gray(img):
+    """
+    Converts RGB image to greyscale
+
+    Args:
+        img (n,m,3 numpy matrix): RGB image
+
+    Returns:
+        n,m numpy matrix: Greyscale image
+    """
     r, g, b = img[:, :, 0], img[:, :, 1], img[:, :, 2]
     gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
     return gray
 
 
-def apply_filter(img, img_filter):
-    """
-    Applies crosss correlation filter to provided image
-    """
-    return signal.correlate(img, img_filter, mode='same')
-
-
 def compute_eng_grad(img):
     """
     Computes the energy of an image using gradient magnitude
+
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        rgb_weights (n,m numpy matrix): img-specific weights for RBG values
+
+    Returns:
+        n,m numpy matrix: Gradient energy map of the provided image
     """
     bw_img = rgb_to_gray(img)
     eng = generic_gradient_magnitude(bw_img, sobel)
@@ -46,6 +62,13 @@ def compute_eng_grad(img):
 def compute_eng_color(img, rgb_weights):
     """
     Computes the energy of an image using its color properties
+
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        rgb_weights (n,m numpy matrix): img-specific weights for RBG values
+
+    Returns:
+        n,m numpy matrix: Color energy map of the provided image
     """
     eng = np.dstack((
         img[:, :, 0] * rgb_weights[0],
@@ -57,6 +80,19 @@ def compute_eng_color(img, rgb_weights):
 
 
 def compute_eng(img4, rgb_weights, mask_weight):
+    """
+    Computes total energy map of the provided image
+
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        rgb_weights (n,m numpy matrix): img-specific weights for RBG values
+        mask_weight (float): Scalar multiplier for the mask.
+
+    Returns:
+        tuple (
+            n,m numpy matrix: Total energy map of the provided image
+        )
+    """
     img = img4[:, :, 0:3]
     mask = img4[:, :, 3]
     eng_color = compute_eng_color(img, rgb_weights)
@@ -69,9 +105,14 @@ def remove_seam(img4, seam):
     """
     Removes 1 seam from the image either vertical or horizontal
 
-    Returns
-    =======
-      4-D image with seam removed from all layers
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        seam (n,m numpy matrix): Seam to indicate position for removal
+
+    Returns:
+        tuple (
+            n,m-1,4 numpy matrix: Image with seam removed from all layers
+        )
     """
     width = img4.shape[0] if img4.shape[0] == seam.shape[0] else img4.shape[0] - 1
     height = img4.shape[1] if img4.shape[1] == seam.shape[1] else img4.shape[1] - 1
@@ -93,10 +134,14 @@ def find_seams(eng):
     """
     Adds the provided seam in either the horizontal or verical direction
 
-    Returns
-    =======
-      Tuple (M, P) 2-D matrices where M is the cummulative energy along a path
-      and P is the parent along the path
+    Args:
+        eng (n,m numpy matrix): Energy map of an image
+
+    Returns:
+        tuple (
+            n,m numpy matrix: Matrixof the cummulative energy along a path
+            n,m numpy matrix:: History of parents along a given path in M
+        )
     """
     rows = len(eng)
     cols = len(eng[0])
@@ -130,10 +175,15 @@ def get_best_seam(M, P):
     """
     Determines the best vertical seam based on the cummulative energy in M
 
-    Returns
-    =======
-      2-D matrix representing a vertical seam. seam[r,c] specifies the row-column
-      index of the pixel to be removed on the original image
+    Args:
+        M (n,m numpy matrix): Cumulative energy matrix of best seams
+        P (n,m numpy matrix): Path history of best seam in cumulative energy matrix
+
+    Returns:
+        tuple (
+            n,1 numpy matrix: Positions of vertical seam to be removed
+            float: Total cost/energy of lowest energy seam
+        )
     """
     rows = len(P)
     seam = np.zeros((rows, 1))
@@ -150,9 +200,16 @@ def add_seam(img4, seam, eng):
     """
     Adds the provided seam in either the horizontal or verical direction
 
-    Returns
-    =======
-      4-D image with seam added to all layers
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        seam (n,m numpy matrix): Seam to indicate position for insertion
+        eng (n,m numpy matrix): Pre-computed energy matrix for supplied image.
+
+    Returns:
+        tuple (
+            n,m+1,4 numpy matrix: Image with seam added to all layers
+            n,m+1,4 numpy matrix: Energy matrix with high weight seam added in position of insertion
+        )
     """
     width = img4.shape[0] if img4.shape[0] == seam.shape[0] else img4.shape[0] + 1
     height = img4.shape[1] if img4.shape[1] == seam.shape[1] else img4.shape[1] + 1
@@ -180,6 +237,17 @@ def add_seam(img4, seam, eng):
 def reduce_width(img4, eng):
     """
     Reduces the width by 1 pixel
+
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        eng (n,m numpy matrix): Pre-computed energy matrix for supplied image.
+
+    Returns:
+        tuple (
+            n,1 numpy matrix: the added seam,
+            n,m-1,4 numpy matrix: The width-redcued image,
+            float: The cost of the seam removed
+        )
     """
     M, P = find_seams(eng)
     seam, cost = get_best_seam(M, P)
@@ -190,6 +258,17 @@ def reduce_width(img4, eng):
 def reduce_height(img4, eng):
     """
     Reduces the height by 1 pixel
+
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        eng (n,m numpy matrix): Pre-computed energy matrix for supplied image.
+
+    Returns:
+        tuple (
+            n,1 numpy matrix: the removed seam,
+            n-1,m,4 numpy matrix: The height-redcued image,
+            float: The cost of the seam removed
+        )
     """
     flipped_eng = np.transpose(eng)
     flipped_img4 = np.transpose(img4, (1, 0, 2))
@@ -204,6 +283,17 @@ def reduce_height(img4, eng):
 def increase_width(img4, eng):
     """
     Increase the width by 1 pixel
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        eng (n,m numpy matrix): Pre-computed energy matrix for supplied image.
+
+    Returns:
+        tuple (
+            n,1 numpy matrix: the added seam,
+            n,m+1,4 numpy matrix: The width-increased image,
+            float: The cost of the seam added,
+            n,m+1 numpy matrix: Energy matrix with high-weight seam added
+        )
     """
     M, P = find_seams(eng)
     seam, cost = get_best_seam(M, P)
@@ -219,6 +309,18 @@ def increase_width(img4, eng):
 def increase_height(img4, eng):
     """
     Increase the height by 1 pixel
+
+    Args:
+        img4 (n,m,4 numpy matrix): RGB image with additional mask layer.
+        eng (n,m numpy matrix): Pre-computed energy matrix for supplied image.
+
+    Returns:
+        tuple (
+            n,1 numpy matrix: the added seam,
+            n+1,m,4 numpy matrix: The height-increased image,
+            float: The cost of the seam added,
+            n+1,m numpy matrix: Energy matrix with high-weight seam added
+        )
     """
     flipped_eng = np.transpose(eng)
     flipped_img4 = np.transpose(img4, (1, 0, 2))
@@ -234,6 +336,21 @@ def increase_height(img4, eng):
 
 
 def intelligent_resize(img, d_rows, d_columns, rgb_weights, mask, mask_weight):
+    """
+    Changes the size of the provided image in either the vertical or horizontal direction,
+    by increasing or decreasing or some combination of the two.
+
+    Args:
+        img (n,m,3 numpy matrix): RGB image to be resized.
+        d_rows (int): The change (delta) in rows. Positive number indicated insertions, negative is removal.
+        d_columns (int): The change (delta) in columns. Positive number indicated insertions, negative is removal.
+        rgb_weights (1,3 numpy matrix): Additional weight paramater to be applied to pixels.
+        mask (n,m,3 numpy matrix): Mask matrix indicating areas to make more or less likely for removal.
+        mask_weight (int): Scalar multiple to be applied to mask.
+
+    Returns:
+        n,m,3 numpy matrix: Resized RGB image.
+    """
     img4 = np.dstack((img, mask))
     is_increase_width = d_columns > 0
     is_increase_height = d_rows > 0
@@ -269,4 +386,4 @@ def intelligent_resize(img, d_rows, d_columns, rgb_weights, mask, mask_weight):
             img4 = adjusted_img4
             d_rows = d_rows - 1
 
-    return img4
+    return img4[:,:,0:3]
