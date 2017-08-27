@@ -52,10 +52,26 @@ def intelligent_resize(img, d_rows, d_columns, rgb_weights, mask, mask_weight):
 ```
 
 ### Examples
+
+For more examples and details see the [demo jupyter notebook](https://github.com/dharness/seam_carving/blob/dharness/improving_docs/demo/Seam%20Carving%20Visual%20Demos.ipynb)
+
+Original
 ![Alt text](/demo/lotr.jpg?raw=true)
 
+Resized
 ![Alt text](/demo/lotr_out.png?raw=true)
+
+
+Original
+![Alt text](/demo/hot_dog.jpg?raw=true)
+
+Resized
+![Alt text](/demo/hot_dog_out.png?raw=true)
 
 ### Limitations
 
+Original
 ![Alt text](/demo/cat.png?raw=true)
+
+Resized
+![Alt text](/demo/cat_out.png?raw=true)
