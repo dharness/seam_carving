@@ -52,7 +52,10 @@ def intelligent_resize(img, d_rows, d_columns, rgb_weights, mask, mask_weight):
 ```
 
 ### Examples
+![Alt text](/demo/lotr.jpg?raw=true)
+
+![Alt text](/demo/lotr_out.png?raw=true)
 
 ### Limitations
 
-![Alt text](/demo/cat.png?raw=true "Optional Title")
+![Alt text](/demo/cat.png?raw=true)
